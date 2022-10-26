@@ -44,6 +44,7 @@ def convertAllDcmFilesInDirectoryToJpeg(directoryName = DEFAULT_PATH):
     try:    
         os.mkdir("converted_" + str(i))
     except Exception as ex:
+        print(ex)
         print("Can't create folder, likely because it already exists. Delete converted folder and try again")
         exit()
 
