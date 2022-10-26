@@ -24,9 +24,8 @@ def getFileNamesAsAList(directoryName = DEFAULT_PATH):
     listOfFiles = []
     listOfFiles = pydicom.data.data_manager.get_files(base)
     listOfFiles.sort()
-    listOfFiles.pop(0)
-    listOfFiles.pop()
-    return listOfFiles
+    listOfDcmFiles = [x for x in listOfFiles if x.endswith(('dcm'))]
+    return listOfDcmFiles
 
 
 
@@ -37,14 +36,18 @@ def convertAllDcmFilesInDirectoryToJpeg(directoryName = DEFAULT_PATH):
     
     listOfFiles = getFileNamesAsAList(directoryName)
     
-    try:
-        os.mkdir("converted")
+    i = 0
+    aConvertedFolderAlreadyExists = os.path.exists("converted_0")
+    while(aConvertedFolderAlreadyExists):
+        i+=1
+        aConvertedFolderAlreadyExists = os.path.exists("converted_" + str(i))
+    try:    
+        os.mkdir("converted_" + str(i))
     except Exception as ex:
         print("Can't create folder, likely because it already exists. Delete converted folder and try again")
         exit()
-    
-    i = 0
-    
+
+    j = 0
     for file in listOfFiles:
         ds = pydicom.dcmread(file)
         ds = ds.pixel_array.astype(float)
@@ -55,8 +58,8 @@ def convertAllDcmFilesInDirectoryToJpeg(directoryName = DEFAULT_PATH):
 
 
         pillowImage = Image.fromarray(final_image)
-        pillowImage.save(directoryName + "/../converted/" + "img_" + str(i) + ".jpeg")
-        i+= 1
+        pillowImage.save(directoryName + "/../converted_" + str(i) + "/img_" + str(j) + ".jpeg")
+        j+= 1
     
     return 0
 
